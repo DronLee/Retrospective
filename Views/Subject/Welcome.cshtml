@@ -1,0 +1,13 @@
+<html>
+    <body>
+        @model SubjectViewModel
+        <div>Name: <input asp-for="@Model.Name" /></div>
+        <div>Password: <input asp-for="@Model.Password" /></div>
+        <form asp-controller="Subject" asp-action="Entry">
+            <input type="submit" value="Войти" />
+        </form>
+        <form asp-controller="Subject" asp-action="Create" method="POST">
+            <input type="submit" value="Создать" />
+        </form>
+    </body>
+</html>
