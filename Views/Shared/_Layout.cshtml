@@ -31,7 +31,8 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2018 - Retrospective</p>
+            @await Html.PartialAsync("_CurrentLanguage")
+            <p>&copy; @DateTime.Now.Year.ToString() - Retrospective</p>
         </footer>
     </div>
 
