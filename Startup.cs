@@ -52,6 +52,22 @@ namespace Retrospective
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+
+        private RequestLocalizationOptions GetLocalizationOptions()
+        {
+            var supportedCultures = new[]
+            {
+                new CultureInfo("en-US"),
+                new CultureInfo("ru-RU")
+            };
+            return new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("en-US"),
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures
+            };
+        }
+
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -68,18 +84,7 @@ namespace Retrospective
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            var supportedCultures = new[]
-            {
-                new CultureInfo("en-US"),
-                new CultureInfo("ru-RU")
-            };
-            var requestLocalizationOptions = new RequestLocalizationOptions
-            {
-                DefaultRequestCulture = new RequestCulture("en-US"),
-                SupportedCultures = supportedCultures,
-                SupportedUICultures = supportedCultures
-            };
-            app.UseRequestLocalization(requestLocalizationOptions);
+            app.UseRequestLocalization(GetLocalizationOptions());
 
             app.UseMvc(routes =>
             {
