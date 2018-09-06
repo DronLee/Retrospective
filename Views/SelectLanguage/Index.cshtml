@@ -1,0 +1,18 @@
+@using System.Globalization
+@model IEnumerable<CultureInfo>
+
+<h2>@SharedLocalizer["Select your language"]</h2>
+
+<div class="row">
+    @foreach(var culture in Model)
+    {
+        <div class="col-md-3">
+            <form asp-action="SetLanguage" method="POST" asp-route-cultureName="@culture.Name"
+                asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                <button class="btn btn-link" type="submit">
+                    @culture.DisplayName
+                </button>
+            </form>
+        </div>
+    }
+</div>
