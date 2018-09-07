@@ -14,6 +14,7 @@ using Retrospective.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
 
 namespace Retrospective
 {
@@ -29,43 +30,23 @@ namespace Retrospective
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // services.Configure<CookiePolicyOptions>(options =>
-            // {
-            //     // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-            //     options.CheckConsentNeeded = context => true;
-            //     options.MinimumSameSitePolicy = SameSiteMode.None;
-            // });
-
             var connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connection));
 
-            // // установка конфигурации подключения
-            // services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            //     .AddCookie(options => //CookieAuthenticationOptions
-            //     {
-            //         options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Subject/Create");
-            //     });
-
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo("en-US"),
+                    new CultureInfo("ru-RU")
+                };
+                options.DefaultRequestCulture = new RequestCulture("en-US");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
             .AddViewLocalization().AddDataAnnotationsLocalization();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-
-        private RequestLocalizationOptions GetLocalizationOptions()
-        {
-            var supportedCultures = new[]
-            {
-                new CultureInfo("en-US"),
-                new CultureInfo("ru-RU")
-            };
-            return new RequestLocalizationOptions
-            {
-                DefaultRequestCulture = new RequestCulture("en-US"),
-                SupportedCultures = supportedCultures,
-                SupportedUICultures = supportedCultures
-            };
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -82,9 +63,9 @@ namespace Retrospective
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
 
-            app.UseRequestLocalization(GetLocalizationOptions());
+            var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+            app.UseRequestLocalization(locOptions.Value);
 
             app.UseMvc(routes =>
             {
