@@ -7,7 +7,7 @@
 <div class="pull-left">
     <a asp-controller="SelectLanguage" asp-action="Index"
         asp-route-returnUrl="@Context.Request.Path">
-        @requestCulture.RequestCulture.Culture.DisplayName
+        @SharedLocalizer[requestCulture.RequestCulture.Culture.DisplayName]
     </a>
     <span> | </span>
 </div>

@@ -10,7 +10,7 @@
             <form asp-action="SetLanguage" method="POST" asp-route-cultureName="@culture.Name"
                 asp-route-returnUrl="@ViewData["ReturnUrl"]">
                 <button class="btn btn-link" type="submit">
-                    @culture.DisplayName
+                    @SharedLocalizer[culture.DisplayName]
                 </button>
             </form>
         </div>
