@@ -15,4 +15,7 @@
   <data name="Select your language" xml:space="preserve">
     <value>Выберите ваш язык</value>
   </data>
+  <data name="Log in to the topic" xml:space="preserve">
+    <value>Войдите в тему</value>
+  </data>
 </root>
