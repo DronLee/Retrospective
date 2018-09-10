@@ -1,13 +1,22 @@
 <html>
     <body>
         @model SubjectViewModel
-        <div>@SharedLocalizer["Name"]: <input asp-for="@Model.Name" /></div>
-        <div>@SharedLocalizer["Password"]: <input asp-for="@Model.Password" /></div>
-        <form asp-controller="Subject" asp-action="Entry">
-            <input type="submit" value=@SharedLocalizer["Entry"] />
-        </form>
-        <form asp-controller="Subject" asp-action="Create" method="POST">
-            <input type="submit" value=@SharedLocalizer["Create"] />
-        </form>
+        <div class="body-content">@SharedLocalizer["Log in to the topic"]</div>
+        <div class="welcome-field">@SharedLocalizer["Name"]: <input class="welcome-field" asp-for="@Model.Name" /></div>
+        <div class="welcome-field">@SharedLocalizer["Password"]: <input class="welcome-field" asp-for="@Model.Password" /></div>
+        <table class="welcome-field" cellspacing="0" cellpadding="0">
+            <tr>
+                <td>
+                    <form asp-controller="Subject" asp-action="Entry">
+                        <input class="welcome-button" type="submit" value=@SharedLocalizer["Entry"] />
+                    </form>
+                </td>
+                <td>
+                    <form asp-controller="Subject" asp-action="Create" method="POST">
+                        <input class="welcome-button" type="submit" value=@SharedLocalizer["Create"] />
+                    </form>
+                </td>
+            </tr>
+        </table>
     </body>
 </html>
