@@ -4,10 +4,7 @@
 @{
     var requestCulture = Context.Features.Get<IRequestCultureFeature>();
 }
-<div class="pull-left">
-    <a asp-controller="SelectLanguage" asp-action="Index"
-        asp-route-returnUrl="@Context.Request.Path">
-        @SharedLocalizer[requestCulture.RequestCulture.Culture.DisplayName]
-    </a>
-    <span> | </span>
-</div>
+<a class="language-footer" asp-controller="SelectLanguage" asp-action="Index"
+    asp-route-returnUrl="@Context.Request.Path">
+    @SharedLocalizer[requestCulture.RequestCulture.Culture.DisplayName]
+</a>
