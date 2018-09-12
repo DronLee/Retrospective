@@ -1,18 +1,17 @@
 ﻿body {
-    padding-top: 100px;
-    padding-bottom: 20px;
+    padding-top: 75px;
 }
 
 .body-content {
-    color: #000080;
+    color: #8baabe;
     font-size: 140%;
-    font-family: Arial Black;
+    font-family: Arial;
     line-height: 2.5;
 }
 
 div, input {
     line-height: 1.5;
-    font-family: Tahoma;
+    font-family: Arial;
 }
 
 .welcome-field {
@@ -21,4 +20,9 @@ div, input {
 
 .welcome-button {
     width: 100px;
+    color: darkcyan
+}
+
+.language-footer {
+    color: rgb(35, 27, 68);
 }
