@@ -24,11 +24,12 @@ namespace Retrospective.Controllers
         {
             if(ModelState.IsValid)
             {
+                string hash = Password.GetHash(viewModel.Password);
                 var subject = _dbContext.Subjects.SingleOrDefaultAsync(
-                    s => s.Name == viewModel.Name && s.Password == viewModel.Password);
+                    s => s.Name == viewModel.Name && s.Password == hash);
                 if (subject.Result == null)
                     return NotFound();
-                return View();
+                return Redirect("~/Record/Index");
             }
             return View();
         }
@@ -39,9 +40,10 @@ namespace Retrospective.Controllers
             {
                 Subject subject = new Subject();
                 subject.Name = viewModel.Name;
-                subject.Password = viewModel.Password;
+                subject.Password = Password.GetHash(viewModel.Password);
                 _dbContext.Subjects.Add(subject);
                 await _dbContext.SaveChangesAsync();
+                return Redirect("~/Record/Index");
             }
             return View();
         }
