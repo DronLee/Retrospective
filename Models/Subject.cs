@@ -9,7 +9,7 @@ namespace Retrospective.Models
         [Required, StringLength(100)]
         public string Name { get; set; }
         
-        [Required, StringLength(20)]
+        [Required, StringLength(344)]
         public string Password { get; set; }
     }
 }
