@@ -10,5 +10,6 @@ namespace Retrospective.Models
         }
 
         public DbSet<Subject> Subjects { get; set; }
+        public DbSet<Record> Records { get; set; }
     }
 }
