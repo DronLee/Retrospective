@@ -36,8 +36,16 @@
         @RenderBody()
         <hr />
         <footer>
-            @await Html.PartialAsync("_CurrentLanguage")
-            <p>&copy; @DateTime.Now.Year.ToString() - Retrospective</p>
+            <table>
+                <tr>
+                    <td>
+                        <p>@await Html.PartialAsync("_CurrentLanguage")</p>
+                    </td>
+                    <td>
+                        <p>&nbsp;&nbsp;@DateTime.Now.Year.ToString() - Retrospective</p>
+                    </td>
+                </tr>
+            </table>
         </footer>
     </div>
 
