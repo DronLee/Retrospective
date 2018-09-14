@@ -29,7 +29,8 @@ namespace Retrospective.Controllers
                     s => s.Name == viewModel.Name && s.Password == hash);
                 if (subject.Result == null)
                     return NotFound();
-                return Redirect("~/Record/Index");
+                return RedirectToAction("Index", "Record", new 
+                    { subjectId = subject.Result.Id, subjectName = subject.Result.Name });
             }
             return View();
         }
@@ -43,7 +44,7 @@ namespace Retrospective.Controllers
                 subject.Password = Password.GetHash(viewModel.Password);
                 _dbContext.Subjects.Add(subject);
                 await _dbContext.SaveChangesAsync();
-                return Redirect("~/Record/Index");
+                return RedirectToAction("Index", "Record", new { subjectId = subject.Id, subjectName = subject.Name } );
             }
             return View();
         }
