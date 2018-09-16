@@ -1,0 +1,28 @@
+<div id = "RecordsData">
+    @model Record[]
+    <table border="5">
+        <tr>
+            <td>
+                @SharedLocalizer["To begin"]
+                @foreach (var row in Model.Where(r => r.RecordType == 0))
+                {
+                    <div>@row.Text</div>
+                }
+            </td>
+            <td>
+                @SharedLocalizer["Stop"]
+                @foreach (var row in Model.Where(r => r.RecordType == 1))
+                {
+                    <div>@row.Text</div>
+                }
+            </td>
+            <td>
+                @SharedLocalizer["Continue"]
+                @foreach (var row in Model.Where(r => r.RecordType == 2))
+                {
+                    <div>@row.Text</div>
+                }
+            </td>
+        </tr>
+    </table>
+</div>
