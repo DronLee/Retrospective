@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <script type="text/javascript">
+            function refresh(day) {
+                var url = "/Record/GetRecordsData/";
+                $.post(url, { 
+                    subjectId: document.getElementById("SubjectId").value, 
+                    currentDay: document.getElementById("CurrentDay").value 
+                    }).done(function (response) {
+                        $("#RecordsData").html(response);
+                });
+            }
+        </script>
+    </head>
+
+    <body>
+        @model RecordsViewModel
+        <div class="body-content">@Model.SubjectName</div>
+        <form asp-controller="Record">
+            <input type="hidden" id="SubjectId" asp-for="SubjectId" />
+            <select id = "CurrentDay" asp-for="CurrentDay" asp-items="Model.Days"></select>
+        </form>
+        <button onclick="refresh()">Register</button>
+        @Html.Partial("_Data", Model.Records)
+    </body>
+</html>
