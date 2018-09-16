@@ -35,6 +35,10 @@ namespace Retrospective.Migrations
 
                     b.Property<int>("SubjectId");
 
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(500);
+
                     b.HasKey("Id");
 
                     b.ToTable("Records");
