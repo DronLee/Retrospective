@@ -1,5 +1,6 @@
 ﻿body {
     padding-top: 75px;
+    background-image: url(/images/background.jpg);
 }
 
 .body-content {
@@ -25,4 +26,18 @@ div, input {
 
 .language-footer {
     color: rgb(35, 27, 68);
+}
+
+.select-days {
+    height: 30px;
+    vertical-align: middle;
+}
+
+.icon-button {
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+    cursor:pointer;
+    border: none;
+    vertical-align: middle;
 }
