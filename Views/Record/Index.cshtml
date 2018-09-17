@@ -16,11 +16,19 @@
     <body>
         @model RecordsViewModel
         <div class="body-content">@Model.SubjectName</div>
-        <form asp-controller="Record">
-            <input type="hidden" id="SubjectId" asp-for="SubjectId" />
-            <select id = "CurrentDay" asp-for="CurrentDay" asp-items="Model.Days"></select>
-        </form>
-        <button onclick="refresh()">Register</button>
+        <table>
+            <tr>
+                <td>
+                    <form asp-controller="Record">
+                        <input type="hidden" id="SubjectId" asp-for="SubjectId" />
+                        <select id = "CurrentDay" class="select-days" asp-for="CurrentDay" asp-items="Model.Days"></select>
+                    </form>
+                </td>
+                <td>
+                    <input class="icon-button" type = "image" src = "/images/refresh-icon.png" onclick="refresh()">
+                </td>
+            </tr>
+        </table>
         @Html.Partial("_Data", Model.Records)
     </body>
 </html>
