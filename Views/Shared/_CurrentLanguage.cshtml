@@ -5,6 +5,6 @@
     var requestCulture = Context.Features.Get<IRequestCultureFeature>();
 }
 <a class="language-footer" asp-controller="SelectLanguage" asp-action="Index"
-    asp-route-returnUrl="@Context.Request.Path">
+    asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
     @SharedLocalizer[requestCulture.RequestCulture.Culture.DisplayName]
 </a>
