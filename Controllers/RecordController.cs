@@ -45,7 +45,10 @@ namespace Retrospective.Controllers
 
         public IActionResult GetRecordsData(int subjectId, string currentDay)
         {
-            return PartialView("_Data", GetRecordsPerDay(subjectId, DateTime.Parse(currentDay)));
+            GroupCollection groups = Regex.Match(currentDay, @"^(?<day>\d\d)\.(?<month>\d\d)\.(?<year>\d{4})$").Groups;
+            return PartialView("_Data", GetRecordsPerDay(subjectId, 
+                new DateTime(int.Parse(groups["year"].Value), 
+                int.Parse(groups["month"].Value), int.Parse(groups["day"].Value))));
         }
     }
 }
