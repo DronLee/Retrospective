@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <data name="Английский (США)" xml:space="preserve">
+  <data name="Английский (США)">
     <value>English (United States)</value>
   </data>
-  <data name="Русский (Россия)" xml:space="preserve">
+  <data name="Русский (Россия)">
     <value>Russian (Russia)</value>
   </data>
 </root>

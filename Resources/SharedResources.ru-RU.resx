@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <data name="Create" xml:space="preserve">
+  <data name="Create">
     <value>Создать</value>
   </data>
-  <data name="Name" xml:space="preserve">
+  <data name="Name">
     <value>Наименование</value>
   </data>
-  <data name="Password" xml:space="preserve">
+  <data name="Password">
     <value>Пароль</value>
   </data>
-  <data name="Entry" xml:space="preserve">
+  <data name="Entry">
     <value>Войти</value>
   </data>
-  <data name="Select your language" xml:space="preserve">
+  <data name="Select your language">
     <value>Выберите ваш язык</value>
   </data>
-  <data name="Log in to the topic" xml:space="preserve">
+  <data name="Log in to the topic">
     <value>Войдите в тему</value>
+  </data>
+  <data name="To begin">
+    <value>Начать</value>
+  </data>
+  <data name="Stop">
+    <value>Прекратить</value>
+  </data>
+  <data name="Continue">
+    <value>Продолжать</value>
+  </data>
+  <data name="Your nickname*">
+    <value>Ваш псевдоним*</value>
   </data>
 </root>
