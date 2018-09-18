@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Retrospective.Models;
 
 namespace Retrospective.Controllers
@@ -12,10 +13,12 @@ namespace Retrospective.Controllers
     public class RecordController: Controller
     {
         private readonly AppDbContext _dbContext;
+        private readonly IStringLocalizer<SharedResources> _stringLocalizer;
 
-        public RecordController(AppDbContext dbContext)
+        public RecordController(AppDbContext dbContext, IStringLocalizer<SharedResources> stringLocalizer)
         {
             _dbContext = dbContext;
+            _stringLocalizer = stringLocalizer;
         }
 
         private Record[] GetRecordsPerDay(int subjectId, DateTime currentDay)
@@ -33,22 +36,40 @@ namespace Retrospective.Controllers
 
         public IActionResult Index(int subjectId, string subjectName)
         {
-            string[] days = GetDays(subjectId).Append("12.08.2018").ToArray();
-            DateTime currentDay = DateTime.Parse(days.Last()).Date;
+            string[] days = GetDays(subjectId);
             return View("Index", new RecordsViewModel {
                 SubjectName = subjectName,
-                Records = GetRecordsPerDay(subjectId, currentDay),
+                Records = GetRecordsPerDay(subjectId, ConvertStringToDay(days.First()).Date),
                 Days = days.Select(d => new SelectListItem(d, d)).ToList(),
-                CurrentDay = days.First()
+                CurrentDay = days.First(),
+                RecordTypes = GetRecordTypes()
             });
+        }
+
+        private List<SelectListItem> GetRecordTypes()
+        {
+            return new List<SelectListItem>
+                {
+                    new SelectListItem(_stringLocalizer["To begin"], "0"),
+                    new SelectListItem(_stringLocalizer["Stop"], "1"),
+                    new SelectListItem(_stringLocalizer["Continue"], "2"),
+                };
+        }
+
+        private DateTime ConvertStringToDay(string value)
+        {
+            GroupCollection groups = Regex.Match(value, @"^(?<day>\d\d)\.(?<month>\d\d)\.(?<year>\d{4})$").Groups;
+            return new DateTime(int.Parse(groups["year"].Value), 
+                int.Parse(groups["month"].Value), int.Parse(groups["day"].Value));
         }
 
         public IActionResult GetRecordsData(int subjectId, string currentDay)
         {
-            GroupCollection groups = Regex.Match(currentDay, @"^(?<day>\d\d)\.(?<month>\d\d)\.(?<year>\d{4})$").Groups;
-            return PartialView("_Data", GetRecordsPerDay(subjectId, 
-                new DateTime(int.Parse(groups["year"].Value), 
-                int.Parse(groups["month"].Value), int.Parse(groups["day"].Value))));
+            return PartialView("_Data", 
+                new RecordsViewModel {
+                    Records = GetRecordsPerDay(subjectId, ConvertStringToDay(currentDay)),
+                    RecordTypes = GetRecordTypes()
+                });
         }
     }
 }
