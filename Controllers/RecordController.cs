@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -21,25 +22,27 @@ namespace Retrospective.Controllers
             _stringLocalizer = stringLocalizer;
         }
 
-        private Record[] GetRecordsPerDay(int subjectId, DateTime currentDay)
+        private async Task<Record[]> GetRecordsPerDay(int subjectId, DateTime currentDay)
         {
-            return _dbContext.Records.Where(r => r.SubjectId == subjectId && r.CreatedOn.Date == currentDay).ToArray();
+            return await _dbContext.Records.Where(
+                r => r.SubjectId == subjectId && r.CreatedOn.Date == currentDay).ToArrayAsync();
         }
 
-        private string[] GetDays(int subjectId)
+        private async Task<string[]> GetDays(int subjectId)
         {
-            List<DateTime> days = _dbContext.Records.Where(
-                r => r.SubjectId == subjectId).Select(r => r.CreatedOn.Date).ToList();
+            List<DateTime> days = await _dbContext.Records.Where(
+                r => r.SubjectId == subjectId).Select(r => r.CreatedOn.Date).ToListAsync();
             days.Add(DateTime.Now.Date);
-            return days.Distinct().OrderByDescending(d => d).Take(20).Select(d => d.ToString("dd.MM.yyyy")).ToArray();
+            return days.Distinct().OrderByDescending(d => d).Take(20).Select(
+                d => d.ToString("dd.MM.yyyy")).ToArray();
         }
 
-        public IActionResult Index(int subjectId, string subjectName)
+        public async Task<IActionResult> Index(int subjectId, string subjectName)
         {
-            string[] days = GetDays(subjectId);
+            string[] days = await GetDays(subjectId);
             return View("Index", new RecordsViewModel {
                 SubjectName = subjectName,
-                Records = GetRecordsPerDay(subjectId, ConvertStringToDay(days.First()).Date),
+                Records = await GetRecordsPerDay(subjectId, ConvertStringToDay(days.First()).Date),
                 Days = days.Select(d => new SelectListItem(d, d)).ToList(),
                 CurrentDay = days.First(),
                 RecordTypes = GetRecordTypes()
@@ -63,12 +66,32 @@ namespace Retrospective.Controllers
                 int.Parse(groups["month"].Value), int.Parse(groups["day"].Value));
         }
 
-        public IActionResult GetRecordsData(int subjectId, string currentDay)
+        public async Task<IActionResult> GetRecordsData(int subjectId, string currentDay)
         {
             return PartialView("_Data", 
                 new RecordsViewModel {
-                    Records = GetRecordsPerDay(subjectId, ConvertStringToDay(currentDay)),
-                    RecordTypes = GetRecordTypes()
+                    Records = await GetRecordsPerDay(subjectId, ConvertStringToDay(currentDay)),
+                    RecordTypes = GetRecordTypes(),
+                    CurrentDay = currentDay
+                });
+        }
+
+        public async Task<IActionResult> AddRecord(int subjectId, string currentDay, string nickname, byte recordType, string text)
+        {
+            _dbContext.Records.Add(new Record
+            {
+                SubjectId = subjectId,
+                CreatedOn = DateTime.Now,
+                Author = nickname,
+                RecordType = recordType,
+                Text = text
+            });
+            await _dbContext.SaveChangesAsync();
+            return PartialView("_Data", 
+                new RecordsViewModel {
+                    Records = await GetRecordsPerDay(subjectId, ConvertStringToDay(currentDay)),
+                    RecordTypes = GetRecordTypes(),
+                    CurrentDay = currentDay
                 });
         }
     }
