@@ -1,28 +1,26 @@
 <div id = "RecordsData">
-    @model Record[]
+    @model RecordsViewModel
+    <form asp-controller="Record">
+        <div class="welcome-field">@SharedLocalizer["Your nickname*"]: 
+            <input class="welcome-field" asp-for="Nickname" />
+        </div>
+        <select class="select-days" asp-for="SelectedRecordType" asp-items="Model.RecordTypes"></select>
+        <input class="welcome-field" asp-for="NewMessage" />
+        <input class="icon-button" type = "image" src = "/images/add-icon.png">
+    </form>
     <table border="5">
         <tr>
-            <td>
-                @SharedLocalizer["To begin"]
-                @foreach (var row in Model.Where(r => r.RecordType == 0))
-                {
-                    <div>@row.Text</div>
-                }
-            </td>
-            <td>
-                @SharedLocalizer["Stop"]
-                @foreach (var row in Model.Where(r => r.RecordType == 1))
-                {
-                    <div>@row.Text</div>
-                }
-            </td>
-            <td>
-                @SharedLocalizer["Continue"]
-                @foreach (var row in Model.Where(r => r.RecordType == 2))
-                {
-                    <div>@row.Text</div>
-                }
-            </td>
+            @foreach (var recordType in Model.RecordTypes)
+            {
+                <td>
+                    @SharedLocalizer[recordType.Text]
+                    @foreach (var row in Model.Records.Where(
+                        r => r.RecordType.ToString() == recordType.Value))
+                    {
+                        <div>@row.Text</div>
+                    }
+                </td>
+            }
         </tr>
     </table>
 </div>
