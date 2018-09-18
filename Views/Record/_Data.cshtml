@@ -1,13 +1,35 @@
+<head>
+    <script type="text/javascript">
+        function add() {
+            var url = "/Record/AddRecord/";
+            console.log("SubjectId: " + document.getElementById("SubjectId").value);
+            console.log("CurrentDay: " + document.getElementById("CurrentDay").value);
+            $.post(url, { 
+                subjectId: document.getElementById("SubjectId").value, 
+                currentDay: document.getElementById("CurrentDay").value,
+                nickname: document.getElementById("Nickname").value,
+                recordType: document.getElementById("RecordType").value,
+                text: document.getElementById("NewMessage").value,
+                }).done(function (response) {
+                    $("#RecordsData").html(response);
+            });
+        }
+    </script>
+</head>
+
 <div id = "RecordsData">
     @model RecordsViewModel
-    <form asp-controller="Record">
-        <div class="welcome-field">@SharedLocalizer["Your nickname*"]: 
-            <input class="welcome-field" asp-for="Nickname" />
-        </div>
-        <select class="select-days" asp-for="SelectedRecordType" asp-items="Model.RecordTypes"></select>
-        <input class="welcome-field" asp-for="NewMessage" />
-        <input class="icon-button" type = "image" src = "/images/add-icon.png">
-    </form>
+    @if(Model.CurrentDay == DateTime.Now.Date.ToString("dd.MM.yyyy"))
+    {
+        <form asp-controller="Record">
+            <div class="welcome-field">@SharedLocalizer["Your nickname*"]: 
+                <input id="Nickname" class="welcome-field" asp-for="Nickname" />
+            </div>
+            <select id="RecordType" class="select-days" asp-for="SelectedRecordType" asp-items="Model.RecordTypes"></select>
+            <input id="NewMessage" class="welcome-field" asp-for="NewMessage" />
+        </form>
+        <input class="icon-button" type = "image" src = "/images/add-icon.png" onclick="add()">
+    }
     <table border="5">
         <tr>
             @foreach (var recordType in Model.RecordTypes)
