@@ -22,10 +22,10 @@
     @if(Model.CurrentDay == DateTime.Now.Date.ToString("dd.MM.yyyy"))
     {
         <div class="welcome-field">@SharedLocalizer["Your nickname*"]: 
-            <input id="Nickname" class="welcome-field" asp-for="Nickname" />
+            <input id="Nickname" class="welcome-field"/>
         </div>
         <select id="RecordType" class="select-days" asp-for="SelectedRecordType" asp-items="Model.RecordTypes"></select>
-        <input id="NewMessage" class="welcome-field" asp-for="NewMessage" />
+        <input id="NewMessage" class="welcome-field"/>
         <input class="icon-button" type = "image" src = "/images/add-icon.png" onclick="add()">
     }
     @if(Model.Records.Length > 0)
