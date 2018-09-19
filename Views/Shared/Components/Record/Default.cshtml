@@ -1,0 +1,12 @@
+<head>
+    <link rel="stylesheet" href="~/css/record.css" />
+</head>
+
+@model Record
+@{
+    string divClassName = "stick record-" + Model.RecordType.ToString();
+}
+<div class="@divClassName">
+    <p class="record-text">@Model.Text</p>
+    <p class="sign">@Model.Author</p>
+</div>
