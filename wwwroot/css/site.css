@@ -35,7 +35,7 @@
 .icon-button {
     width: 30px;
     height: 30px;
-    margin-left: 10px;
+    margin-left: 2px;
     cursor:pointer;
     border: none;
     vertical-align: middle;
@@ -54,4 +54,14 @@
 
 .records-table {
     border: 5px solid indigo;
+}
+
+.new-record-field {
+    height: 30px;
+    font-size: 20px;
+    margin-right: 7px;
+}
+
+.new-record-text {
+    width: 50%;
 }
