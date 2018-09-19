@@ -1,7 +1,7 @@
 <html>
     <head>
         <script type="text/javascript">
-            function refresh(day) {
+            function refresh() {
                 var url = "/Record/GetRecordsData/";
                 $.post(url, { 
                     subjectId: document.getElementById("SubjectId").value, 
@@ -16,19 +16,10 @@
     <body>
         @model RecordsViewModel
         <div class="body-content">@Model.SubjectName</div>
-        <table>
-            <tr>
-                <td>
-                    <form asp-controller="Record">
-                        <input type="hidden" id="SubjectId" asp-for="SubjectId" />
-                        <select id = "CurrentDay" class="select-days" asp-for="CurrentDay" asp-items="Model.Days"></select>
-                    </form>
-                </td>
-                <td>
-                    <input class="icon-button" type = "image" src = "/images/refresh-icon.png" onclick="refresh()">
-                </td>
-            </tr>
-        </table>
+        <input type="hidden" id="SubjectId" asp-for="SubjectId" />
+        <select id="CurrentDay" class="select-days" asp-for="CurrentDay" asp-items="Model.Days" onchange="refresh()" ></select>
+        <input class="icon-button" type="image" src="/images/refresh-icon.png" onclick="refresh()">
+
         @Html.Partial("_Data", Model)
     </body>
 </html>
