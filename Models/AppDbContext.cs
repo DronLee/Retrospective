@@ -11,5 +11,10 @@ namespace Retrospective.Models
 
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Record> Records { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Record>().HasIndex(r => new { r.SubjectId, r.CreatedOn });
+        }
     }
 }
