@@ -62,7 +62,14 @@ namespace Retrospective
             }
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                OnPrepareResponse = context =>
+                {
+                    context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
+                    context.Context.Response.Headers.Add("Expires", "-1");
+                }
+            });
 
             var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
             app.UseRequestLocalization(locOptions.Value);
@@ -71,7 +78,7 @@ namespace Retrospective
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Subject}/{action=Welcome}");
+                    template: "{controller=Home}/{action=Welcome}");
             });
         }
     }

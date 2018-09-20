@@ -1,17 +1,20 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Retrospective.Models;
 
 namespace Retrospective.Controllers
 {
-    public class SubjectController: Controller
+    public class HomeController: Controller
     {
         private readonly AppDbContext _dbContext;
+        private readonly IStringLocalizer<SharedResources> _stringLocalizer;
 
-        public SubjectController(AppDbContext dbContext)
+        public HomeController(AppDbContext dbContext, IStringLocalizer<SharedResources> stringLocalizer)
         {
             _dbContext = dbContext;
+            _stringLocalizer = stringLocalizer;
         }
 
         public IActionResult Welcome()
@@ -20,19 +23,19 @@ namespace Retrospective.Controllers
             return View("Welcome", result);
         }
 
-        public IActionResult Entry(SubjectViewModel viewModel)
+        public async Task<IActionResult> Entry(SubjectViewModel viewModel)
         {
             if(ModelState.IsValid)
             {
-                string hash = Password.GetHash(viewModel.Password);
-                var subject = _dbContext.Subjects.SingleOrDefaultAsync(
-                    s => s.Name == viewModel.Name && s.Password == hash);
-                if (subject.Result == null)
+                var subject = await _dbContext.Subjects.SingleOrDefaultAsync(s => s.Name == viewModel.Name);
+                if (subject == null)
                     return NotFound();
-                return RedirectToAction("Index", "Record", new 
-                    { subjectId = subject.Result.Id, subjectName = subject.Result.Name });
+                string hash = Password.GetHash(viewModel.Password);
+                if (subject.Password == hash)
+                    return RedirectToAction("Index", "Record", new 
+                        { subjectId = subject.Id, subjectName = subject.Name });
             }
-            return View();
+            return View("Welcome", viewModel);
         }
 
         public async Task<ActionResult> Create(SubjectViewModel viewModel)
@@ -47,6 +50,11 @@ namespace Retrospective.Controllers
                 return RedirectToAction("Index", "Record", new { subjectId = subject.Id, subjectName = subject.Name } );
             }
             return View();
+        }
+
+        public ActionResult Error(ErrorViewModel viewModel)
+        {
+            return View("Error", viewModel);
         }
     }
 }
