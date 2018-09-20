@@ -30,4 +30,16 @@
   <data name="Your nickname*">
     <value>Ваш псевдоним*</value>
   </data>
+  <data name="The Name field is required.">
+    <value>Укажите наименование.</value>
+  </data>
+  <data name="The Password field is required.">
+    <value>Задайте пароль.</value>
+  </data>
+  <data name="Unexpected error on the server.">
+    <value>Непредвиденная ошибка на сервере.</value>
+  </data>
+  <data name="Accept an apology.">
+    <value>Примите извинения.</value>
+  </data>
 </root>
