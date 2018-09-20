@@ -3,8 +3,14 @@
         @model SubjectViewModel
         <form asp-controller="Subject">
             <div class="body-content">@SharedLocalizer["Log in to the topic"]</div>
-            <div class="welcome-field">@SharedLocalizer["Name"]: <input class="welcome-field" asp-for="Name" /></div>
-            <div class="welcome-field">@SharedLocalizer["Password"]: <input class="welcome-field" asp-for="Password" /></div>
+            <div class="welcome-field">@SharedLocalizer["Name"]: 
+                <input class="welcome-field" asp-for="Name" />
+            </div>
+            <span class="error" asp-validation-for="Name"></span>
+            <div class="welcome-field">@SharedLocalizer["Password"]: 
+                <input class="welcome-field" asp-for="Password" />
+            </div>
+            <span class="error" asp-validation-for="Password"></span>
             <table class="welcome-field" cellspacing="0" cellpadding="0">
                 <tr>
                     <td>
