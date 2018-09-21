@@ -4,11 +4,11 @@
         <form asp-controller="Subject">
             <div class="body-content">@SharedLocalizer["Log in to the topic"]</div>
             <div class="welcome-field">@SharedLocalizer["Name"]: 
-                <input class="welcome-field" asp-for="Name" />
+                <input class="welcome-field" asp-for="Name" maxlength="100" />
             </div>
             <span class="error" asp-validation-for="Name"></span>
             <div class="welcome-field">@SharedLocalizer["Password"]: 
-                <input class="welcome-field" asp-for="Password" />
+                <input class="welcome-field" asp-for="Password" maxlength="20" />
             </div>
             <span class="error" asp-validation-for="Password"></span>
             <table class="welcome-field" cellspacing="0" cellpadding="0">
