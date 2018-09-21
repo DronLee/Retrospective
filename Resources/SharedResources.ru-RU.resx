@@ -30,16 +30,31 @@
   <data name="Your nickname*">
     <value>Ваш псевдоним*</value>
   </data>
-  <data name="The Name field is required.">
-    <value>Укажите наименование.</value>
-  </data>
-  <data name="The Password field is required.">
-    <value>Задайте пароль.</value>
-  </data>
   <data name="Unexpected error on the server.">
     <value>Непредвиденная ошибка на сервере.</value>
   </data>
   <data name="Accept an apology.">
     <value>Примите извинения.</value>
+  </data>
+  <data name="No topic name.">
+    <value>Не указано наименование темы.</value>
+  </data>
+  <data name="Enter password.">
+    <value>Введите пароль.</value>
+  </data>
+  <data name="This topic already exists.">
+    <value>Данная тема уже существует.</value>
+  </data>
+  <data name="Incorrect password.">
+    <value>Неверный пароль.</value>
+  </data>
+  <data name="Topic not found.">
+    <value>Данной темы не найдено.</value>
+  </data>
+  <data name="Please enter your nickname.">
+    <value>Укажите свой псевдоним.</value>
+  </data>
+  <data name="Write your wish.">
+    <value>Напишите ваше пожелание.</value>
   </data>
 </root>
