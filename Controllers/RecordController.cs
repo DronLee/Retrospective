@@ -76,23 +76,37 @@ namespace Retrospective.Controllers
                 });
         }
 
+        private bool Verify(string nickname, string text)
+        {
+            if(string.IsNullOrEmpty(nickname))
+                ModelState.AddModelError("Nickname", _stringLocalizer["Please enter your nickname."]);
+            if (string.IsNullOrEmpty(text))
+                ModelState.AddModelError("NewMessage", _stringLocalizer["Write your wish."]);
+            return ModelState.IsValid;
+        }
+
         public async Task<IActionResult> AddRecord(int subjectId, string currentDay, string nickname, byte recordType, string text)
         {
-            _dbContext.Records.Add(new Record
+            if(Verify(nickname, text))
             {
-                SubjectId = subjectId,
-                CreatedOn = DateTime.Now,
-                Author = nickname,
-                RecordType = recordType,
-                Text = text
-            });
-            await _dbContext.SaveChangesAsync();
-            return PartialView("_Data", 
-                new RecordsViewModel {
-                    Records = await GetRecordsPerDay(subjectId, ConvertStringToDay(currentDay)),
-                    RecordTypes = GetRecordTypes(),
-                    CurrentDay = currentDay
+                _dbContext.Records.Add(new Record
+                {
+                    SubjectId = subjectId,
+                    CreatedOn = DateTime.Now,
+                    Author = nickname,
+                    RecordType = recordType,
+                    Text = text
                 });
+                await _dbContext.SaveChangesAsync();
+            }
+            return PartialView("_Data", 
+                    new RecordsViewModel {
+                        Records = await GetRecordsPerDay(subjectId, ConvertStringToDay(currentDay)),
+                        RecordTypes = GetRecordTypes(),
+                        CurrentDay = currentDay,
+                        NewMessage = text,
+                        Nickname = nickname
+                    });
         }
     }
 }
