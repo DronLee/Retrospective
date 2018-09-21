@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
@@ -18,6 +19,9 @@ namespace Retrospective.Controllers
 
         public IActionResult Index(string returnUrl = null)
         {
+            // Бессмыслено после попытки создания или входа в тему опять отправлять по этому пути после выбора языка.
+            // Поэтому будет отправка на Welcome. 
+            returnUrl = Regex.Replace(returnUrl, "(?<=Home/)(Create)|(Entry)", "Welcome");
             ViewData["ReturnUrl"] = returnUrl;
             return View(_requestLocalizationOptions.SupportedUICultures);
         }
