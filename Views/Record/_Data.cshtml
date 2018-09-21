@@ -21,11 +21,16 @@
     @model RecordsViewModel
     @if(Model.CurrentDay == DateTime.Now.Date.ToString("dd.MM.yyyy"))
     {
-        <span class="new-record-field">@SharedLocalizer["Your nickname*"]:</span><input class="new-record-field" id="Nickname"/>
+        <span class="new-record-field">@SharedLocalizer["Your nickname*"]:</span>
+        <input class="new-record-field" id="Nickname" asp-for="Nickname"/>
+        <span class="error" asp-validation-for="Nickname"></span>
         <br/>
         <select id="RecordType" class="new-record-field" asp-for="SelectedRecordType" asp-items="Model.RecordTypes"></select>
-        <input id="NewMessage" class="new-record-field new-record-text"/>
+        <input id="NewMessage" class="new-record-field new-record-text" asp-for="NewMessage"/>
         <input class="icon-button" type = "image" src = "/images/add-icon.png" onclick="add()">
+        <div>
+            <span class="error" asp-validation-for="NewMessage"></span>
+        </div>
     }
     @if(Model.Records.Length > 0)
     {
