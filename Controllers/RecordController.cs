@@ -15,25 +15,19 @@ namespace Retrospective.Controllers
 {
     public class RecordController: MyController
     {
-        private readonly AppDbContext _dbContext;
-        private readonly IStringLocalizer<SharedResources> _stringLocalizer;
-
         public RecordController(AppDbContext dbContext, IStringLocalizer<SharedResources> stringLocalizer, 
-            ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor): base(logger, httpContextAccessor)
-        {
-            _dbContext = dbContext;
-            _stringLocalizer = stringLocalizer;
-        }
+            ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor):
+                base(dbContext, stringLocalizer, logger, httpContextAccessor) {}
 
         private async Task<Record[]> GetRecordsPerDay(int subjectId, DateTime currentDay)
         {
-            return await _dbContext.Records.Where(
+            return await dbContext.Records.Where(
                 r => r.SubjectId == subjectId && r.CreatedOn.Date == currentDay).ToArrayAsync();
         }
 
         private async Task<string[]> GetDays(int subjectId)
         {
-            List<DateTime> days = await _dbContext.Records.Where(
+            List<DateTime> days = await dbContext.Records.Where(
                 r => r.SubjectId == subjectId).Select(r => r.CreatedOn.Date).ToListAsync();
             days.Add(DateTime.Now.Date);
             return days.Distinct().OrderByDescending(d => d).Take(20).Select(
@@ -59,9 +53,9 @@ namespace Retrospective.Controllers
         {
             return new List<SelectListItem>
                 {
-                    new SelectListItem(_stringLocalizer["To begin"], "0"),
-                    new SelectListItem(_stringLocalizer["Stop"], "1"),
-                    new SelectListItem(_stringLocalizer["Continue"], "2"),
+                    new SelectListItem(stringLocalizer["To begin"], "0"),
+                    new SelectListItem(stringLocalizer["Stop"], "1"),
+                    new SelectListItem(stringLocalizer["Continue"], "2"),
                 };
         }
 
@@ -88,9 +82,9 @@ namespace Retrospective.Controllers
         private bool Verify(string nickname, string text)
         {
             if(string.IsNullOrEmpty(nickname))
-                ModelState.AddModelError("Nickname", _stringLocalizer["Please enter your nickname."]);
+                ModelState.AddModelError("Nickname", stringLocalizer["Please enter your nickname."]);
             if (string.IsNullOrEmpty(text))
-                ModelState.AddModelError("NewMessage", _stringLocalizer["Write your wish."]);
+                ModelState.AddModelError("NewMessage", stringLocalizer["Write your wish."]);
             return ModelState.IsValid;
         }
 
@@ -99,7 +93,7 @@ namespace Retrospective.Controllers
             LogInformation("Добавление записи.");
             if(Verify(nickname, text))
             {
-                _dbContext.Records.Add(new Record
+                dbContext.Records.Add(new Record
                 {
                     SubjectId = subjectId,
                     CreatedOn = DateTime.Now,
@@ -107,7 +101,7 @@ namespace Retrospective.Controllers
                     RecordType = recordType,
                     Text = text
                 });
-                await _dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
                 LogInformation("Запись успешно добавлена.");
             }
             return PartialView("_Data", 
