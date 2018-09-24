@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Retrospective.Models;
 
 namespace Retrospective.Controllers
 {
-    public class RecordController: Controller
+    public class RecordController: MyController
     {
         private readonly AppDbContext _dbContext;
         private readonly IStringLocalizer<SharedResources> _stringLocalizer;
 
-        public RecordController(AppDbContext dbContext, IStringLocalizer<SharedResources> stringLocalizer)
+        public RecordController(AppDbContext dbContext, IStringLocalizer<SharedResources> stringLocalizer, 
+            ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor): base(logger, httpContextAccessor)
         {
             _dbContext = dbContext;
             _stringLocalizer = stringLocalizer;
@@ -39,14 +42,17 @@ namespace Retrospective.Controllers
 
         public async Task<IActionResult> Index(int subjectId, string subjectName)
         {
+            LogInformation("Загрузка страницы записей.");
             string[] days = await GetDays(subjectId);
-            return View("Index", new RecordsViewModel {
+            var viewModel = new RecordsViewModel {
                 SubjectName = subjectName,
                 Records = await GetRecordsPerDay(subjectId, ConvertStringToDay(days.First()).Date),
                 Days = days.Select(d => new SelectListItem(d, d)).ToList(),
                 CurrentDay = days.First(),
                 RecordTypes = GetRecordTypes()
-            });
+            };
+            LogInformation("Все данные для страницы записей успешно получены.");
+            return View("Index", viewModel);
         }
 
         private List<SelectListItem> GetRecordTypes()
@@ -68,9 +74,12 @@ namespace Retrospective.Controllers
 
         public async Task<IActionResult> GetRecordsData(int subjectId, string currentDay)
         {
+            LogInformation(string.Format("Получение записей за день \"{0}\".", currentDay));
+            var records = await GetRecordsPerDay(subjectId, ConvertStringToDay(currentDay));
+            LogInformation(string.Format("Записи за день \"{0}\" успешно получены.", currentDay));
             return PartialView("_Data", 
                 new RecordsViewModel {
-                    Records = await GetRecordsPerDay(subjectId, ConvertStringToDay(currentDay)),
+                    Records = records,
                     RecordTypes = GetRecordTypes(),
                     CurrentDay = currentDay
                 });
@@ -87,6 +96,7 @@ namespace Retrospective.Controllers
 
         public async Task<IActionResult> AddRecord(int subjectId, string currentDay, string nickname, byte recordType, string text)
         {
+            LogInformation("Добавление записи.");
             if(Verify(nickname, text))
             {
                 _dbContext.Records.Add(new Record
@@ -98,6 +108,7 @@ namespace Retrospective.Controllers
                     Text = text
                 });
                 await _dbContext.SaveChangesAsync();
+                LogInformation("Запись успешно добавлена.");
             }
             return PartialView("_Data", 
                     new RecordsViewModel {

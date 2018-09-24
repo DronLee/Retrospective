@@ -45,6 +45,7 @@ namespace Retrospective
                 options.SupportedUICultures = supportedCultures;
             });
             services.AddLocalization(options => options.ResourcesPath = "Resources");
+            services.AddHttpContextAccessor();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
             .AddViewLocalization().AddDataAnnotationsLocalization();
         }

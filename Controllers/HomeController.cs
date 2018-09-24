@@ -1,18 +1,21 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Retrospective.Models;
 
 namespace Retrospective.Controllers
 {
-    public class HomeController: Controller
+    public class HomeController: MyController
     {
         private readonly AppDbContext _dbContext;
         private readonly IStringLocalizer<SharedResources> _stringLocalizer;
-
-        public HomeController(AppDbContext dbContext, IStringLocalizer<SharedResources> stringLocalizer)
+        
+        public HomeController(AppDbContext dbContext, IStringLocalizer<SharedResources> stringLocalizer, 
+            ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor): base(logger, httpContextAccessor)
         {
             _dbContext = dbContext;
             _stringLocalizer = stringLocalizer;
@@ -35,6 +38,7 @@ namespace Retrospective.Controllers
 
         public async Task<IActionResult> Entry(SubjectViewModel viewModel)
         {
+            LogInformation(string.Format("Вход в тему \"{0}\".", viewModel.Name));
             if(Verify(viewModel))
             {
                 var subject = await _dbContext.Subjects.SingleOrDefaultAsync(s => s.Name == viewModel.Name);
@@ -43,8 +47,11 @@ namespace Retrospective.Controllers
                 else
                 {
                     if (subject.Password == Password.GetHash(viewModel.Password))
+                    {
+                        LogInformation(string.Format("Вход в тему \"{0}\" выполнен.", viewModel.Name));
                         return RedirectToAction("Index", "Record", new 
-                            { subjectId = subject.Id, subjectName = subject.Name });
+                            { subjectId = subject.Id, subjectName = subject.Name });   
+                    }
                     else
                         ModelState.AddModelError("Password", _stringLocalizer["Incorrect password."]);
                 }
@@ -54,6 +61,7 @@ namespace Retrospective.Controllers
 
         public async Task<ActionResult> Create(SubjectViewModel viewModel)
         {
+            LogInformation(string.Format("Создание темы \"{0}\".", viewModel.Name));
             if(Verify(viewModel))
             {
                 Subject subject = new Subject();
@@ -72,7 +80,10 @@ namespace Retrospective.Controllers
                         throw;
                 }
                 if (ModelState.IsValid)
+                {
+                    LogInformation(string.Format("Создание темы \"{0}\" выполнено.", viewModel.Name));
                     return RedirectToAction("Index", "Record", new { subjectId = subject.Id, subjectName = subject.Name } );
+                }
             }
             return View("Welcome", viewModel);
         }
