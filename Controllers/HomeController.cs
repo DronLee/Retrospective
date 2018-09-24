@@ -88,9 +88,9 @@ namespace Retrospective.Controllers
             return View("Welcome", viewModel);
         }
 
-        public ActionResult Error(ErrorViewModel viewModel)
+        public ActionResult Error()
         {
-            return View("Error", viewModel);
+            return View("Error");
         }
     }
 }
