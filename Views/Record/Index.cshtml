@@ -20,6 +20,6 @@
         <select id="CurrentDay" class="select-days" asp-for="CurrentDay" asp-items="Model.Days" onchange="refresh()" ></select>
         <input class="icon-button" type="image" src="/images/refresh-icon.png" onclick="refresh()">
 
-        @Html.Partial("_Data", Model)
+        @await Html.PartialAsync("_Data", Model)
     </body>
 </html>
