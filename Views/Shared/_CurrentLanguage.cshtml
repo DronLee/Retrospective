@@ -4,7 +4,14 @@
 @{
     var requestCulture = Context.Features.Get<IRequestCultureFeature>();
 }
-<a class="language-footer" asp-controller="SelectLanguage" asp-action="Index"
-    asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
-    @SharedLocalizer[requestCulture.RequestCulture.Culture.DisplayName]
-</a>
+@if(Context.Request.Path == "/SelectLanguage/Index")
+{
+    <span class="language-footer">@SharedLocalizer[requestCulture.RequestCulture.Culture.DisplayName]</span>
+}
+else
+{
+    <a class="language-footer" asp-controller="SelectLanguage" asp-action="Index"
+        asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
+        @SharedLocalizer[requestCulture.RequestCulture.Culture.DisplayName]
+    </a>
+}
