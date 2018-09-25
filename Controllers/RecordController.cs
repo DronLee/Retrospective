@@ -13,18 +13,32 @@ using Retrospective.Models;
 
 namespace Retrospective.Controllers
 {
+    /// <summary>
+    /// Контроллер, реализующий работу с записями.
+    /// </summary>
     public class RecordController: MyController
     {
         public RecordController(AppDbContext dbContext, IStringLocalizer<SharedResources> stringLocalizer, 
             ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor):
                 base(dbContext, stringLocalizer, logger, httpContextAccessor) {}
 
+        /// <summary>
+        /// Получение записей за определённый день, относящихся к указанной теме.
+        /// </summary>
+        /// <param name="subjectId">Идентификатор темы.</param>
+        /// <param name="currentDay">День, за который будут отобраны записи.</param>
+        /// <returns>Отобранные записи.</returns>
         private async Task<Record[]> GetRecordsPerDay(int subjectId, DateTime currentDay)
         {
             return await dbContext.Records.Where(
                 r => r.SubjectId == subjectId && r.CreatedOn.Date == currentDay).ToArrayAsync();
         }
 
+        /// <summary>
+        /// Получение дней, по которым есть записи для указанной темы.
+        /// </summary>
+        /// <param name="subjectId">Идентификатор темы, для которой будут отобраны дни.</param>
+        /// <returns>Дни в формате для отображения на странице.</returns>
         private async Task<string[]> GetDays(int subjectId)
         {
             List<DateTime> days = await dbContext.Records.Where(
@@ -34,6 +48,12 @@ namespace Retrospective.Controllers
                 d => d.ToString("dd.MM.yyyy")).ToArray();
         }
 
+        /// <summary>
+        /// Загрузка страницы с записями. Отображается сразу после входа в тему.
+        /// </summary>
+        /// <param name="subjectId">Идентификатор темы.</param>
+        /// <param name="subjectName">Тема.</param>
+        /// <returns>Страница записей.</returns>
         public async Task<IActionResult> Index(int subjectId, string subjectName)
         {
             LogInformation("Загрузка страницы записей.");
@@ -49,6 +69,10 @@ namespace Retrospective.Controllers
             return View("Index", viewModel);
         }
 
+        /// <summary>
+        /// Получение списка типов записей для предоставления выбора на странице.
+        /// </summary>
+        /// <returns>Список типов записей.</returns>
         private List<SelectListItem> GetRecordTypes()
         {
             return new List<SelectListItem>
@@ -59,6 +83,11 @@ namespace Retrospective.Controllers
                 };
         }
 
+        /// <summary>
+        /// Преобразование строкового представления дня, отображаемого на странице в DateTime.
+        /// </summary>
+        /// <param name="value">Строковое представление дня.</param>
+        /// <returns>День в виде DateTime.</returns>
         private DateTime ConvertStringToDay(string value)
         {
             GroupCollection groups = Regex.Match(value, @"^(?<day>\d\d)\.(?<month>\d\d)\.(?<year>\d{4})$").Groups;
@@ -66,6 +95,12 @@ namespace Retrospective.Controllers
                 int.Parse(groups["month"].Value), int.Parse(groups["day"].Value));
         }
 
+        /// <summary>
+        /// Получение частичного представления с записями.
+        /// </summary>
+        /// <param name="subjectId">Идентификатор темы.</param>
+        /// <param name="currentDay">День, за который требуется отобрать в представление записи.</param>
+        /// <returns>Частичное представление с записями.</returns>
         public async Task<IActionResult> GetRecordsData(int subjectId, string currentDay)
         {
             LogInformation(string.Format("Получение записей за день \"{0}\".", currentDay));
@@ -79,6 +114,12 @@ namespace Retrospective.Controllers
                 });
         }
 
+        /// <summary>
+        /// Проверка данных. Если в данных есть ошибки, они указываются в ModelState с соответсвующим ключём.
+        /// </summary>
+        /// <param name="nickname">Псевдоним автора.</param>
+        /// <param name="text">Текст записи.</param>
+        /// <returns>True - все данные корректные.</returns>
         private bool Verify(string nickname, string text)
         {
             if(string.IsNullOrEmpty(nickname))
@@ -88,6 +129,15 @@ namespace Retrospective.Controllers
             return ModelState.IsValid;
         }
 
+        /// <summary>
+        /// Добавление новой записи.
+        /// </summary>
+        /// <param name="subjectId">Идентификатор темы, в которой будет создана запись.</param>
+        /// <param name="currentDay">День, за который будет создана запись.</param>
+        /// <param name="nickname">Псевдоним автора записи.</param>
+        /// <param name="recordType">Тип создаваемой записи.</param>
+        /// <param name="text">Текст создаваемой записи.</param>
+        /// <returns>Частичное представление с записями.</returns>
         public async Task<IActionResult> AddRecord(int subjectId, string currentDay, string nickname, byte recordType, string text)
         {
             LogInformation("Добавление записи.");

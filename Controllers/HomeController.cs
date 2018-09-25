@@ -18,12 +18,21 @@ namespace Retrospective.Controllers
             ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor):
                 base(dbContext, stringLocalizer, logger, httpContextAccessor) {}
 
+        /// <summary>
+        /// Вывод начальной страницы.
+        /// </summary>
         public IActionResult Welcome()
         {
             var result = new SubjectViewModel();
             return View("Welcome", result);
         }
 
+        /// <summary>
+        /// Проверка данных модели представления.
+        /// Если в данных есть ошибки, они указываются в ModelState с соответсвующим ключём.
+        /// </summary>
+        /// <param name="viewModel">Модель представления для проверки.</param>
+        /// <returns>True - все данные корректные.</returns>
         private bool Verify(SubjectViewModel viewModel)
         {
             if(string.IsNullOrEmpty(viewModel.Name))
@@ -33,6 +42,10 @@ namespace Retrospective.Controllers
             return ModelState.IsValid;
         }
 
+        /// <summary>
+        /// Вход в тему.
+        /// </summary>
+        /// <param name="viewModel">Модель представления темы, в которую осуществляется вход.</param>
         public async Task<IActionResult> Entry(SubjectViewModel viewModel)
         {
             LogInformation(string.Format("Вход в тему \"{0}\".", viewModel.Name));
@@ -56,25 +69,41 @@ namespace Retrospective.Controllers
             return View("Welcome", viewModel);
         }
 
+        /// <summary>
+        /// Обработка исключения, возникшего при сохранении записи темы.
+        /// Если ошибка связана с ключём UK_Subject_Name, 
+        /// значит совершена попытка добавить тему с неуникальным наименованием. Это и будет записано в ModelState.
+        /// </summary>
+        /// <param name="exc">Исключение, возникшее при сохранении записи темы.</param>
+        private void ProcessingSaveException(Exception exc)
+        {
+            if(exc.InnerException.Message.Contains("UK_Subject_Name"))
+                ModelState.AddModelError("Name", stringLocalizer["This topic already exists."]);
+            else
+                throw;
+        }
+
+        /// <summary>
+        /// Создание новой темы.
+        /// </summary>
+        /// <param name="viewModel">Модель представления новой темы.</param>
         public async Task<ActionResult> Create(SubjectViewModel viewModel)
         {
             LogInformation(string.Format("Создание темы \"{0}\".", viewModel.Name));
             if(Verify(viewModel))
             {
-                Subject subject = new Subject();
-                subject.Name = viewModel.Name;
-                subject.Password = Password.GetHash(viewModel.Password);
-                dbContext.Subjects.Add(subject);
+                dbContext.Subjects.Add(new Subject()
+                {
+                    Name = viewModel.Name,
+                    Password = Password.GetHash(viewModel.Password)
+                });
                 try
                 {
                     await dbContext.SaveChangesAsync();
                 }
                 catch(Exception exc)
                 {
-                    if(exc.InnerException.Message.Contains("UK_Subject_Name"))
-                        ModelState.AddModelError("Name", stringLocalizer["This topic already exists."]);
-                    else
-                        throw;
+                    ProcessingSaveException(exc);
                 }
                 if (ModelState.IsValid)
                 {
