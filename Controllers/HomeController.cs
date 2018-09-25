@@ -80,7 +80,7 @@ namespace Retrospective.Controllers
             if(exc.InnerException.Message.Contains("UK_Subject_Name"))
                 ModelState.AddModelError("Name", stringLocalizer["This topic already exists."]);
             else
-                throw;
+                throw exc;
         }
 
         /// <summary>
@@ -92,11 +92,12 @@ namespace Retrospective.Controllers
             LogInformation(string.Format("Создание темы \"{0}\".", viewModel.Name));
             if(Verify(viewModel))
             {
-                dbContext.Subjects.Add(new Subject()
+                var subject = new Subject()
                 {
                     Name = viewModel.Name,
                     Password = Password.GetHash(viewModel.Password)
-                });
+                };
+                dbContext.Subjects.Add(subject);
                 try
                 {
                     await dbContext.SaveChangesAsync();
