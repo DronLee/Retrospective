@@ -24,7 +24,7 @@ namespace Retrospective.Controllers
         /// <summary>
         /// Объект, выполняющий журналирование.
         /// </summary>
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<MyController> _logger;
         /// <summary>
         /// Формат даты в создаваемых записях журнала.
         /// </summary>
@@ -35,12 +35,10 @@ namespace Retrospective.Controllers
         private readonly IHttpContextAccessor _accessor;
 
         protected MyController(AppDbContext dbContext, IStringLocalizer<SharedResources> stringLocalizer, 
-            ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor)
+            ILogger<MyController> logger, IHttpContextAccessor httpContextAccessor)
         {
-            this.dbContext = dbContext;
-            this.stringLocalizer = stringLocalizer;
-            _logger = logger;
-            _accessor = httpContextAccessor;
+            (this.dbContext, this.stringLocalizer, _logger, _accessor) =
+                (dbContext, stringLocalizer, logger, httpContextAccessor);
         }
 
         /// <summary>
@@ -49,7 +47,7 @@ namespace Retrospective.Controllers
         /// <param name="message">Добавляемая запись.</param>
         protected void LogInformation(string message)
         {
-            _logger.LogInformation(string.Format("{0} (id = {1}): {2}", 
+            _logger?.LogInformation(string.Format("{0} (id = {1}): {2}", 
                 DateTime.Now.ToString(_logDateFormat), _accessor.HttpContext.Connection.Id, message));
         }
     }
