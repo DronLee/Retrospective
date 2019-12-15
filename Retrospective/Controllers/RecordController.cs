@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +17,8 @@ namespace Retrospective.Controllers
     /// </summary>
     public class RecordController: MyController
     {
+        private const string _dayFormat = "dd.MM.yyyy";
+
         public RecordController(AppDbContext dbContext, IStringLocalizer<SharedResources> stringLocalizer, 
             ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor):
                 base(dbContext, stringLocalizer, logger, httpContextAccessor) {}
@@ -60,7 +61,7 @@ namespace Retrospective.Controllers
             string[] days = await GetDays(subjectId);
             var viewModel = new RecordsViewModel {
                 SubjectName = subjectName,
-                Records = await GetRecordsPerDay(subjectId, ConvertStringToDay(days.First()).Date),
+                Records = await GetRecordsPerDay(subjectId, DateTime.ParseExact(days.First(), _dayFormat, null).Date),
                 Days = days.Select(d => new SelectListItem(d, d)).ToList(),
                 CurrentDay = days.First(),
                 RecordTypes = GetRecordTypes()
@@ -84,18 +85,6 @@ namespace Retrospective.Controllers
         }
 
         /// <summary>
-        /// Преобразование строкового представления дня, отображаемого на странице в DateTime.
-        /// </summary>
-        /// <param name="value">Строковое представление дня.</param>
-        /// <returns>День в виде DateTime.</returns>
-        private DateTime ConvertStringToDay(string value)
-        {
-            GroupCollection groups = Regex.Match(value, @"^(?<day>\d\d)\.(?<month>\d\d)\.(?<year>\d{4})$").Groups;
-            return new DateTime(int.Parse(groups["year"].Value), 
-                int.Parse(groups["month"].Value), int.Parse(groups["day"].Value));
-        }
-
-        /// <summary>
         /// Получение частичного представления с записями.
         /// </summary>
         /// <param name="subjectId">Идентификатор темы.</param>
@@ -104,7 +93,7 @@ namespace Retrospective.Controllers
         public async Task<IActionResult> GetRecordsData(int subjectId, string currentDay)
         {
             LogInformation(string.Format("Получение записей за день \"{0}\".", currentDay));
-            var records = await GetRecordsPerDay(subjectId, ConvertStringToDay(currentDay));
+            var records = await GetRecordsPerDay(subjectId, DateTime.ParseExact(currentDay, _dayFormat, null));
             LogInformation(string.Format("Записи за день \"{0}\" успешно получены.", currentDay));
             return PartialView("_Data", 
                 new RecordsViewModel {
@@ -141,12 +130,15 @@ namespace Retrospective.Controllers
         public async Task<IActionResult> AddRecord(int subjectId, string currentDay, string nickname, byte recordType, string text)
         {
             LogInformation("Добавление записи.");
-            if(Verify(nickname, text))
+
+            var createdOn = DateTime.ParseExact(currentDay, _dayFormat, null);
+
+            if (Verify(nickname, text))
             {
                 dbContext.Records.Add(new Record
                 {
                     SubjectId = subjectId,
-                    CreatedOn = DateTime.Now,
+                    CreatedOn = createdOn,
                     Author = nickname,
                     RecordType = recordType,
                     Text = text
@@ -156,7 +148,7 @@ namespace Retrospective.Controllers
             }
             return PartialView("_Data", 
                     new RecordsViewModel {
-                        Records = await GetRecordsPerDay(subjectId, ConvertStringToDay(currentDay)),
+                        Records = await GetRecordsPerDay(subjectId, createdOn),
                         RecordTypes = GetRecordTypes(),
                         CurrentDay = currentDay,
                         NewMessage = text,
